@@ -479,7 +479,7 @@ nav a:hover {
 
 .pill {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   left: 10px;
   z-index: 2;
   padding: 4px 10px;
@@ -692,6 +692,37 @@ label {
   gap: 7px;
   color: var(--mute);
   font-size: 14px;
+}
+
+.field-block {
+  display: grid;
+  gap: 7px;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.field-label {
+  line-height: 1;
+}
+
+.cover-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cover-row input {
+  min-width: 0;
+}
+
+.cover-row .btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+.field-hint {
+  color: #6f6b62;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .wide {

@@ -1,9 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useBookCover } from '../hooks/useBookCover'
 import { coverGradient } from '../lib/book'
 
 export default function BookCover({ book, className = '' }) {
+  const resolved = useBookCover(book)
   const [failed, setFailed] = useState(false)
-  const showImage = Boolean(book.cover) && !failed
+
+  useEffect(() => {
+    setFailed(false)
+  }, [resolved])
+
+  const showImage = Boolean(resolved) && !failed
 
   return (
     <div
@@ -12,7 +19,7 @@ export default function BookCover({ book, className = '' }) {
     >
       {showImage ? (
         <img
-          src={book.cover}
+          src={resolved}
           alt={`${book.title} cover`}
           loading="lazy"
           onError={() => setFailed(true)}

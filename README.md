@@ -13,7 +13,10 @@ React Hook Form, Lucide icons, and Sonner toasts.
 In the Supabase dashboard, open **SQL Editor** and run, in order:
 
 1. `supabase/schema.sql` — creates the `books` table, trigger, indexes, and RLS policies.
-2. `supabase/seed.sql` — optional starter shelf with 12 books.
+2. `supabase/seed.sql` — optional starter shelf with 12 books and covers.
+
+If you seeded the shelf before covers were added, run `supabase/covers.sql` once
+to fill the existing rows.
 
 The policies allow public reads and writes only for signed-in users. Disable new
 sign-ups in **Authentication → Providers → Email** so only your account can write.
@@ -56,6 +59,9 @@ Sign in with the Supabase account, then add, edit, delete, and mark books as
 **Read** or **Wishlist**. New books appear in the public grid immediately. The studio
 also supports JSON export/import for backups.
 
+Leave the cover field empty and the site will look one up on Open Library. You can
+also use **Find cover** in the form to fetch and store it explicitly.
+
 ## Deployment
 
 The app uses browser history routing, so `/admin` needs an SPA fallback:
@@ -79,7 +85,8 @@ src/
   pages/            home and admin pages
 supabase/
   schema.sql        table, RLS policies, trigger
-  seed.sql          starter books
+  seed.sql          starter books with covers
+  covers.sql        fill covers for an existing starter shelf
 public/covers/      optional local cover images
 ```
 

@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Check, Loader2, RotateCcw, Save } from 'lucide-react'
+import { BookImage, Check, Loader2, RotateCcw, Save } from 'lucide-react'
+import { findCoverUrl } from '../../lib/covers'
 
 const DEFAULTS = {
   title: '',
@@ -21,9 +22,14 @@ export default function BookForm({ editing, onSave, onCancel, busy = false }) {
     handleSubmit,
     reset,
     watch,
+    getValues,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm({ defaultValues: DEFAULTS })
 
+  const [finding, setFinding] = useState(false)
   const status = watch('status')
 
   useEffect(() => {
@@ -52,6 +58,35 @@ export default function BookForm({ editing, onSave, onCancel, busy = false }) {
       rating: values.status === 'read' ? Number(values.rating) : 0,
     })
     if (!editing) reset(DEFAULTS)
+  }
+
+  const findCover = async () => {
+    const title = getValues('title')
+    if (!title?.trim()) {
+      setError('cover', { type: 'manual', message: 'Add a title first.' })
+      return
+    }
+
+    setFinding(true)
+    clearErrors('cover')
+    try {
+      const cover = await findCoverUrl(title, getValues('author'))
+      if (!cover) {
+        setError('cover', {
+          type: 'manual',
+          message: 'No cover found. Paste a URL instead.',
+        })
+        return
+      }
+      setValue('cover', cover, { shouldDirty: true, shouldValidate: true })
+    } catch {
+      setError('cover', {
+        type: 'manual',
+        message: 'Cover lookup failed. Try again or paste a URL.',
+      })
+    } finally {
+      setFinding(false)
+    }
   }
 
   return (
@@ -136,10 +171,29 @@ export default function BookForm({ editing, onSave, onCancel, busy = false }) {
         />
       </label>
 
-      <label>
-        Cover image URL
-        <input {...register('cover')} placeholder="https://… or covers/book.jpg" />
-      </label>
+      <div className="field-block">
+        <span className="field-label">Cover image URL</span>
+        <div className="cover-row">
+          <input {...register('cover')} placeholder="https://… or covers/book.jpg" />
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={findCover}
+            disabled={finding}
+          >
+            {finding ? (
+              <Loader2 size={15} className="spin" />
+            ) : (
+              <BookImage size={15} />
+            )}
+            {finding ? 'Searching…' : 'Find cover'}
+          </button>
+        </div>
+        <span className="field-hint">
+          Leave it empty to fetch a cover from Open Library automatically.
+        </span>
+        {errors.cover && <span className="field-error">{errors.cover.message}</span>}
+      </div>
 
       <label>
         Book link
