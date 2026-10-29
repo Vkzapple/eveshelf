@@ -8,8 +8,9 @@ export default function Hero({ total, read }) {
         eve<em>shelf</em>
       </h1>
       <p className="lead">
-        Books I have finished, books I am still chasing, and the ones I would press into
-        your hands. A small library of recommendations, kept honestly.
+        Books i have finished, books i am still chasing, and the ones i would press into
+        ur hands. A small library of recommendations, kept honestly. 
+        -@Evellkz- 
       </p>
       <div className="hero-actions">
         <button
