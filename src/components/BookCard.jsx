@@ -1,63 +1,40 @@
-import { memo, useRef } from 'react'
-import { useInView } from '../hooks/useInView'
-import { storeSearchUrl } from '../config'
+import { memo } from 'react'
+import { Star } from 'lucide-react'
+import BookCover from './BookCover'
+import { STATUS_LABEL, stars } from '../lib/book'
 
-const canTilt = () =>
-  matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches
-
-function BookCard({ book, index }) {
-  const ref = useRef(null)
-  const seen = useInView(ref)
-  const { title, author, country, status, rating, height, hue, note, cover, link } = book
-
-  // Efek tilt menulis CSS variable langsung ke DOM agar tidak memicu re-render.
-  const onMove = (e) => {
-    if (!canTilt()) return
-    const el = ref.current, r = el.getBoundingClientRect()
-    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height
-    el.style.setProperty('--ry', `${(x - 0.5) * 9}deg`)
-    el.style.setProperty('--rx', `${(0.5 - y) * 9}deg`)
-    el.style.setProperty('--mx', `${x * 100}%`)
-    el.style.setProperty('--my', `${y * 100}%`)
-  }
-  const onLeave = () => {
-    ref.current.style.setProperty('--rx', '0deg')
-    ref.current.style.setProperty('--ry', '0deg')
-  }
-
+function BookCard({ book, index, onOpen }) {
   return (
-    <a
-      ref={ref}
-      className={`book${seen ? ' in' : ''}`}
-      href={link || storeSearchUrl(title)}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${title}, buka di Gramedia`}
-      style={{ '--h': `${height}px`, transitionDelay: `${(index % 4) * 70}ms` }}
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
+    <article
+      className="book-card"
+      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
     >
-      <div className="cover" style={{ background: `linear-gradient(160deg,hsl(${hue} 42% 32%),hsl(${(hue + 45) % 360} 48% 14%))` }}>
-        {cover ? (
-          <img src={cover} alt="" loading="lazy" />
-        ) : (
-          <>
-            <small>{country}</small>
-            <div><strong>{title}</strong><span>{author}</span></div>
-          </>
-        )}
-      </div>
-      <div className="shine" />
-      <div className="over">
-        <p>{note}</p>
-        <div className="meta">
-          {status === 'baca'
-            ? <span className="stars" aria-label={`Rating ${rating} dari 5`}>{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</span>
-            : <span className="badge">wishlist</span>}
-          <span>Buka di Gramedia</span>
+      <button
+        type="button"
+        className="book-trigger"
+        onClick={() => onOpen(book)}
+        aria-label={`Open details for ${book.title}`}
+      >
+        <div className="book-cover-wrap">
+          <BookCover book={book} />
+          <span className={`pill pill-${book.status}`}>{STATUS_LABEL[book.status]}</span>
         </div>
-      </div>
-    </a>
+        <div className="book-copy">
+          <h3>{book.title}</h3>
+          <p>{book.author}</p>
+          {book.status === 'read' && book.rating > 0 ? (
+            <p className="stars" aria-label={`Rated ${book.rating} out of 5`}>
+              {stars(book.rating)}
+            </p>
+          ) : (
+            <p className="book-genre">
+              <Star size={12} />
+              {book.genre || 'Uncategorised'}
+            </p>
+          )}
+        </div>
+      </button>
+    </article>
   )
 }
 

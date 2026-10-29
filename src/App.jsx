@@ -1,25 +1,29 @@
-import Background from './components/Background'
-import Hero from './components/Hero'
-import Gallery from './components/Gallery'
-import RecommendForm from './components/RecommendForm'
-import { BOOKS } from './data/books'
+import { useEffect } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import { Toaster } from 'sonner'
+import Home from './pages/Home'
+import Admin from './pages/Admin'
 
-const READ = BOOKS.filter((b) => b.status === 'baca').length
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
 
 export default function App() {
   return (
     <>
-      <Background />
-      <header className="top">
-        <a href="#atas" className="logo">rak buku</a>
-        <nav><a href="#rak">koleksi</a><a href="#kirim">kirim rekomendasi</a></nav>
-      </header>
-      <main id="atas">
-        <Hero total={BOOKS.length} read={READ} />
-        <Gallery books={BOOKS} />
-        <RecommendForm />
-      </main>
-      <footer>Dibuat dengan buku yang belum selesai dibaca.</footer>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
+      <Toaster theme="dark" position="bottom-right" />
     </>
   )
 }
