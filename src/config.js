@@ -1,6 +1,6 @@
-// Email tujuan rekomendasi dari pengunjung.
-export const CONTACT_EMAIL = 'emailkamu@example.com'
+export const CONTACT_EMAIL = 'hello@eveshelf.com'
 
-// Pola link toko. Dipakai kalau sebuah buku tidak punya field `link` sendiri.
+export const STORE_NAME = 'Gramedia'
+
 export const storeSearchUrl = (title) =>
   `https://www.gramedia.com/search?q=${encodeURIComponent(title)}`
