@@ -8,15 +8,16 @@ export default function Hero({ total, read }) {
         eve<em>shelf</em>
       </h1>
       <p className="lead">
-        Books i have finished, books i am still chasing, and the ones i would press into
-        ur hands. A small library of recommendations, kept honestly. 
-        <br />
-        <a
-        href="https://evekz.pages.dev"
-        target="_blank"
-        rel="noopener noreferrer"
-        style="color: inherit; text-decoration: none;"
-        >@Evellkz</a>
+      Books i have finished, books i am still chasing, and the ones i would press into
+      ur hands. A small library of recommendations, kept honestly.
+      <br />
+      <a
+      href="https://evekz.pages.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ color: "inherit", textDecoration: "none" }}>
+      @Evellkz
+      </a>
       </p>
       <div className="hero-actions">
         <button
