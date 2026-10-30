@@ -20,11 +20,13 @@ import AuthForm from '../components/admin/AuthForm'
 import SupabaseSetup from '../components/admin/SupabaseSetup'
 import { STATUS_LABEL, stars } from '../lib/book'
 import { BOOKS_KEY, useBooks } from '../hooks/useBooks'
+import { RECOMMENDATIONS_KEY, useRecommendations } from '../hooks/useRecommendations'
 import { useSession } from '../hooks/useSession'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import {
   createBook,
   deleteBook,
+  deleteRecommendation,
   importBooks,
   updateBook,
   updateBookStatus,
@@ -34,6 +36,7 @@ export default function Admin() {
   const session = useSession()
   const queryClient = useQueryClient()
   const { data: books = [], isLoading, error } = useBooks()
+  const { data: recommendations = [] } = useRecommendations()
   const [editing, setEditing] = useState(null)
   const [query, setQuery] = useState('')
   const formRef = useRef(null)
@@ -82,7 +85,19 @@ export default function Admin() {
     onError,
   })
 
-  const read = books.filter((book) => book.status === 'read').length
+  const invalidateRecommendations = () =>
+  queryClient.invalidateQueries({ queryKey: RECOMMENDATIONS_KEY })
+
+const recommendationDelete = useMutation({
+  mutationFn: deleteRecommendation,
+  onSuccess: (_data, id) => {
+    invalidateRecommendations()
+    toast.success('Recommendation removed')
+  },
+  onError,
+})
+
+const read = books.filter((book) => book.status === 'read').length
   const wishlist = books.length - read
 
   const visible = useMemo(() => {
@@ -179,7 +194,9 @@ export default function Admin() {
           <h1>
             eve<em>shelf</em> admin
           </h1>
-          <p className="admin-note">Books are saved directly to Supabase.</p>
+          <p className="admin-note">
+            Books and visitor recommendations are saved directly to Supabase.
+          </p>
         </div>
         <div className="admin-head-actions">
           <span className="admin-user">
@@ -342,6 +359,51 @@ export default function Admin() {
           </div>
         </section>
       </div>
+
+      <section className="panel admin-inbox">
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">Recommended by readers</p>
+            <h2>Recommendation inbox</h2>
+          </div>
+          <span className="panel-foot-note">
+            {recommendations.length}{' '}
+            {recommendations.length === 1 ? 'suggestion' : 'suggestions'}
+          </span>
+        </div>
+
+        {recommendations.length > 0 ? (
+          <ul className="admin-list inbox-list">
+            {recommendations.map((item) => (
+              <li key={item.id} className="admin-row inbox-row">
+                <div className="admin-row-copy">
+                  <h3>
+                    {item.title}
+                    {item.author && <span className="inbox-author"> · {item.author}</span>}
+                  </h3>
+                  {item.reason && <p className="inbox-reason">{item.reason}</p>}
+                  <span className="inbox-time">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="admin-row-actions">
+                  <button
+                    type="button"
+                    className="icon-btn icon-danger"
+                    onClick={() => recommendationDelete.mutate(item.id)}
+                    title="Remove recommendation"
+                    aria-label={`Remove ${item.title} recommendation`}
+                  >
+                    <Trash2 size={17} />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="empty">No recommendations yet.</p>
+        )}
+      </section>
     </main>
   )
 }

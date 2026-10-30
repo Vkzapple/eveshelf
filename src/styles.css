@@ -763,6 +763,69 @@ textarea::placeholder {
   margin-top: 4px;
 }
 
+.recommend-loop {
+  position: relative;
+  height: min(320px, 44vh);
+  margin-top: 30px;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+.recommend-track {
+  animation: recommendScroll 30s linear infinite;
+  will-change: transform;
+}
+
+.recommend-track:hover,
+.recommend-track:focus-within {
+  animation-play-state: paused;
+}
+
+.recommend-card {
+  margin: 0 0 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-soft);
+}
+
+.recommend-card-title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.recommend-card-title span {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.recommend-card-reason {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 5px 0 0;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+@keyframes recommendScroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recommend-track {
+    animation: none;
+  }
+}
+
 .field-error {
   color: #e88b8b;
   font-size: 12px;
@@ -782,6 +845,15 @@ footer {
 
 footer p {
   margin: 0;
+}
+
+footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
 
 .admin {
@@ -853,6 +925,32 @@ footer p {
   grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
   gap: 22px;
   align-items: start;
+}
+
+.admin-inbox {
+  margin-top: 22px;
+}
+
+.inbox-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.inbox-author {
+  color: var(--mute);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.inbox-reason {
+  margin: 4px 0 5px;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.inbox-time {
+  color: var(--mute);
+  font-size: 12px;
 }
 
 .panel {

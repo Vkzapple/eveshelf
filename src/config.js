@@ -1,5 +1,3 @@
-export const CONTACT_EMAIL = 'hello@eveshelf.com'
-
 export const STORE_NAME = 'Gramedia'
 
 export const storeSearchUrl = (title) =>

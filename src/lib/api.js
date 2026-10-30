@@ -80,3 +80,39 @@ export async function importBooks(books) {
   const { error } = await supabase.from('books').insert(books.map(toRow))
   if (error) throw error
 }
+
+const toRecommendation = (row) => ({
+  id: row.id,
+  title: row.title,
+  author: row.author,
+  reason: row.reason,
+  createdAt: row.created_at,
+})
+
+export async function fetchRecommendations() {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .select('id,title,author,reason,created_at')
+    .order('created_at', { ascending: false })
+
+  return unwrap({ data, error }).map(toRecommendation)
+}
+
+export async function createRecommendation({ title, author, reason }) {
+  const { data, error } = await supabase
+    .from('recommendations')
+    .insert({
+      title: title.trim(),
+      author: author?.trim() || '',
+      reason: reason?.trim() || '',
+    })
+    .select('id,title,author,reason,created_at')
+    .single()
+
+  return toRecommendation(unwrap({ data, error }))
+}
+
+export async function deleteRecommendation(id) {
+  const { error } = await supabase.from('recommendations').delete().eq('id', id)
+  if (error) throw error
+}
