@@ -57,6 +57,13 @@ export async function findCoverUrl(title, author) {
     match = pick(await search(params), target)
   }
 
+  if (!match) {
+    match = pick(
+      await search({ title: cleanTitle, limit: '10', fields: 'title,cover_i' }),
+      target,
+    )
+  }
+
   const url = match ? `${COVER_BASE}/b/id/${match.cover_i}-L.jpg` : ''
   cache.set(key, url)
   return url

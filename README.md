@@ -16,7 +16,7 @@ In the Supabase dashboard, open **SQL Editor** and run, in order:
 2. `supabase/seed.sql` — optional starter shelf with 12 books and covers.
 
 If you seeded the shelf before covers were added, run `supabase/covers.sql` once
-to fill the existing rows.
+to fill the existing rows (it also adds local covers for the Indonesian titles).
 
 The policies allow public reads and writes only for signed-in users. Disable new
 sign-ups in **Authentication → Providers → Email** so only your account can write.
