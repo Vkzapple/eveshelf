@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { ArrowUpRight, X } from 'lucide-react'
 import BookCover from './BookCover'
 import { bookMeta, stars } from '../lib/book'
-import { STORE_NAME, storeSearchUrl } from '../config'
+import { googleBooksUrl, findBookUrl } from '../lib/covers'
 
 export default function BookDetail({ book, onClose }) {
   const closeRef = useRef(null)
+  const [finding, setFinding] = useState(false)
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -18,6 +20,20 @@ export default function BookDetail({ book, onClose }) {
       document.removeEventListener('keydown', onKey)
     }
   }, [onClose])
+
+  const openBook = async () => {
+    if (book.link) {
+      window.open(book.link, '_blank', 'noopener,noreferrer')
+      return
+    }
+    setFinding(true)
+    try {
+      const url = await findBookUrl(book.title, book.author)
+      window.open(url || googleBooksUrl(book.title, book.author), '_blank', 'noopener,noreferrer')
+    } finally {
+      setFinding(false)
+    }
+  }
 
   if (!book) return null
 
@@ -47,15 +63,10 @@ export default function BookDetail({ book, onClose }) {
 
           {book.review && <p className="detail-review">{book.review}</p>}
 
-          <a
-            className="btn btn-outline"
-            href={book.link || storeSearchUrl(book.title)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {book.link ? 'Open book link' : `Find on ${STORE_NAME}`}
+          <button type="button" className="btn btn-solid" onClick={openBook} disabled={finding}>
+            {book.link ? 'Open book link' : finding ? 'Finding the book…' : 'Find this book'}
             <ArrowUpRight size={16} />
-          </a>
+          </button>
         </div>
       </article>
     </div>

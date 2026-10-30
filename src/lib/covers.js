@@ -68,3 +68,35 @@ export async function findCoverUrl(title, author) {
   cache.set(key, url)
   return url
 }
+
+export const googleBooksUrl = (title, author) =>
+  `https://www.google.com/search?tbm=bks&q=${encodeURIComponent(author ? `${title} ${author}` : title)}`
+
+export async function findBookUrl(title, author) {
+  const cleanTitle = title?.trim()
+  if (!cleanTitle) return ''
+
+  const fallback = googleBooksUrl(cleanTitle, author)
+
+  try {
+    const params = { title: cleanTitle, limit: '5', fields: 'key,edition_key' }
+    if (author?.trim()) params.author = author.trim()
+    const response = await fetch(
+      `https://openlibrary.org/search.json?${new URLSearchParams(params)}`,
+    )
+    if (!response.ok) return fallback
+    const data = await response.json()
+    const doc = data.docs?.[0]
+    if (!doc) return fallback
+
+    if (doc.edition_key?.length) {
+      return `https://openlibrary.org/books/${doc.edition_key[0]}`
+    }
+    if (doc.key?.length) {
+      return `https://openlibrary.org${doc.key}`
+    }
+    return fallback
+  } catch {
+    return fallback
+  }
+}
